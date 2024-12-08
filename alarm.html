@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>絶対に起きれる目覚まし</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .hidden {
+            display: none;
+        }
+        .big-button {
+            padding: 15px 25px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>絶対に起きれるタイマー</h1>
+        <div id="setup">
+            <label for="hours">時間:</label>
+            <input type="number" id="hours" min="0" max="23" value="0">
+            <label for="minutes">分:</label>
+            <input type="number" id="minutes" min="0" max="59" value="0">
+            <button class="big-button" onclick="setAlarm()">目覚ましをセット</button>
+        </div>
+        <div id="alarm" class="hidden">
+            <h2>起きてください！</h2>
+            <p id="problem"></p>
+            <input type="text" id="answer">
+            <button class="big-button" onclick="checkAnswer()">回答</button>
+        </div>
+        <audio id="alarmSound">
+            <source src="alarm.mp3" type="audio/mpeg">
+            お使いのブラウザはオーディオ要素をサポートしていません。
+        </audio>
+    </div>
+    <script>
+        let alarmTime;
+        let correctAnswer = '';
+        const alarmSound = document.getElementById('alarmSound');
+
+        function setAlarm() {
+            const hours = document.getElementById('hours').value;
+            const minutes = document.getElementById('minutes').value;
+            alarmTime = new Date();
+            alarmTime.setHours(hours);
+            alarmTime.setMinutes(minutes);
+            alarmTime.setSeconds(0);
+
+            document.getElementById('setup').classList.add('hidden');
+            alert(`目覚ましを${hours}時${minutes}分にセットしました`);
+            checkAlarm();
+        }
+
+        function checkAlarm() {
+            const now = new Date();
+            if (now >= alarmTime) {
+                alarmSound.play();
+                showProblem();
+            } else {
+                setTimeout(checkAlarm, 1000);
+            }
+        }
+
+        function showProblem() {
+            const problem = generateProblem();
+            document.getElementById('problem').textContent = problem.question;
+            document.getElementById('alarm').classList.remove('hidden');
+        }
+
+        function generateProblem() {
+            const number = Math.floor(Math.random() * 50) + 50; // 50から99のランダムな数字
+            const factors = primeFactors(number);
+            correctAnswer = factors.join(' ');
+            const question = `${number} の素因数分解を答えてください。また、半角数字で答え、半角スペースで区切ってください。`;
+            return { question };
+        }
+
+        function primeFactors(n) {
+            const factors = [];
+            let divisor = 2;
+            while (n >= 2) {
+                if (n % divisor == 0) {
+                    factors.push(divisor);
+                    n = n / divisor;
+                } else {
+                    divisor++;
+                }
+            }
+            return factors;
+        }
+
+        function checkAnswer() {
+            const userAnswer = document.getElementById('answer').value.trim();
+            if (userAnswer === correctAnswer) {
+                alert('正解！');
+                alarmSound.pause();
+                alarmSound.currentTime = 0;
+                document.getElementById('alarm').classList.add('hidden');
+                document.getElementById('setup').classList.remove('hidden');
+            } else {
+                alert('不正解。もう一度試してください。');
+            }
+        }
+    </script>
+</body>
+</html>
