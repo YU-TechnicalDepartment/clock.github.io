@@ -60,6 +60,12 @@
             alarmTime.setMinutes(minutes);
             alarmTime.setSeconds(0);
 
+            // セットした時間が現在の時間より前の場合、翌日に設定する
+            const now = new Date();
+            if (alarmTime <= now) {
+                alarmTime.setDate(alarmTime.getDate() + 1);
+            }
+
             document.getElementById('setup').classList.add('hidden');
             alert(`目覚ましを${hours}時${minutes}分にセットしました`);
             checkAlarm();
