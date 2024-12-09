@@ -42,7 +42,7 @@
             <input type="text" id="answer">
             <button class="big-button" onclick="checkAnswer()">回答</button>
         </div>
-        <audio id="alarmSound">
+        <audio id="alarmSound" loop>
             <source src="alarm.mp3" type="audio/mpeg">
             お使いのブラウザはオーディオ要素をサポートしていません。
         </audio>
@@ -113,6 +113,7 @@
                 document.getElementById('setup').classList.remove('hidden');
             } else {
                 alert('不正解。もう一度試してください。');
+                alarmSound.play();  // 音を再生し続ける
             }
         }
     </script>
